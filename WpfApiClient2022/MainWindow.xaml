@@ -5,30 +5,41 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApiClient2022"
         xmlns:vm="clr-namespace:WpfApiClient2022.ViewModels"
+        
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
+        <vm:Convertor x:Key="Conv"/>
         <DataTemplate x:Key="Actor">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{Binding firstName}"/>
                 <TextBlock Text="{Binding lastName}"/>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="Movie">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding title}"/>
+            </StackPanel>
+        </DataTemplate>
+        
     </Window.Resources>
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_Reload" Command="{Binding ReloadCommand}"/>
+            <MenuItem Header="_Actors" Command="{Binding ReloadActorsCommand}"/>
+            <MenuItem Header="_Movies" Command="{Binding ReloadMoviesCommand}"/>
         </Menu>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <TextBox Text="{Binding Response}" TextWrapping="Wrap" />
-            <ListBox ItemsSource="{Binding Actors}" Grid.Column="1" ItemTemplate="{StaticResource Actor}"/>
+            <TextBox Text="{Binding Response, Converter={StaticResource Conv}}" TextWrapping="Wrap" />
+            
+            <ListBox ItemsSource="{Binding Actors}" Grid.Column="1" ItemTemplate="{StaticResource Actor}" />
+            <ListBox ItemsSource="{Binding Movies}" Grid.Column="1" ItemTemplate="{StaticResource Movie}"/>
         </Grid>
     </DockPanel>
 </Window>
