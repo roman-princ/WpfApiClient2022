@@ -20,10 +20,9 @@ namespace WpfApiClient2022.ViewModels
         private HttpClient _client;
 
         private string _response;
-        private IEnumerable<ActorObject> _resObj;
-        private IEnumerable<MovieObject> _resObj2;
-        private ObservableCollection<ActorObject> _actors = new ObservableCollection<ActorObject>();
-        private ObservableCollection<MovieObject> _movies = new ObservableCollection<MovieObject>();
+        private IEnumerable<object> _resObj;
+        private ObservableCollection<object> _result = new ObservableCollection<object>();
+        
 
         public MainViewModel()
         {
@@ -36,56 +35,47 @@ namespace WpfApiClient2022.ViewModels
             ReloadActorsCommand = new RelayCommand(
                 async () =>
                 {
-                    Movies.Clear();
-                    Response = "";
                     HttpResponseMessage response = new HttpResponseMessage();
                     response = await _client.GetAsync("actors");
                     if (response.IsSuccessStatusCode)
                     {
                         Response = await response.Content.ReadAsStringAsync();
                         _resObj = JsonConvert.DeserializeObject<IEnumerable<ActorObject>>(Response);
-                        Actors = new ObservableCollection<ActorObject>(_resObj);
+                        Result = new ObservableCollection<object>(_resObj);
                     }
                     else
                     {
                         Response = "OOPS";
-                        Actors.Clear();
+                        Result.Clear();
                     }
                 }
                 );
 
             ReloadMoviesCommand = new RelayCommand(
                 async () =>
-                {
-                    Actors.Clear();
-                    Response = "";                    
+                {                   
                     HttpResponseMessage response = new HttpResponseMessage();
                     response = await _client.GetAsync("movies");
                     if (response.IsSuccessStatusCode)
                     {
                         Response = await response.Content.ReadAsStringAsync();
-                        _resObj2 = JsonConvert.DeserializeObject<IEnumerable<MovieObject>>(Response);                    
-                        Movies = new ObservableCollection<MovieObject>(_resObj2);
+                        _resObj = JsonConvert.DeserializeObject<IEnumerable<MovieObject>>(Response);
+                        Result = new ObservableCollection<object>(_resObj);
                     }
                     else
                     {
                         Response = "OOPS";
-                        Movies.Clear();
+                        Result.Clear();
                     }
                 }
                 );
-
-
-
         }
 
         public string Response { get { return _response; } set { _response = value; NotifyPropertyChanged(); } }
-        public ObservableCollection<ActorObject> Actors { get { return _actors; } set { _actors = value; NotifyPropertyChanged(); } }
-        public ObservableCollection<MovieObject> Movies { get { return _movies; } set { _movies = value; NotifyPropertyChanged(); } }
+        public ObservableCollection<object> Result { get { return _result; } set { _result = value; NotifyPropertyChanged(); } }
 
         public RelayCommand ReloadActorsCommand { get; set; }
         public RelayCommand ReloadMoviesCommand { get; set; }
-        public ParametrizedRelayCommand<Guid> ActorByIdCommand { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")

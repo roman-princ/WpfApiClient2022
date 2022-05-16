@@ -9,19 +9,18 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
-        <vm:Convertor x:Key="Conv"/>
-        <DataTemplate x:Key="Actor">
+        <DataTemplate x:Key="ActorItem">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{Binding firstName}"/>
                 <TextBlock Text="{Binding lastName}"/>
             </StackPanel>
         </DataTemplate>
-        <DataTemplate x:Key="Movie">
+        <DataTemplate x:Key="MovieItem">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{Binding title}"/>
             </StackPanel>
         </DataTemplate>
-        
+        <vm:TemplateSelector x:Key="tempSelector" ActorTemplate="{StaticResource ActorItem}" MovieTemplate="{StaticResource MovieItem}" />
     </Window.Resources>
     <Window.DataContext>
         <vm:MainViewModel/>
@@ -36,10 +35,9 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <TextBox Text="{Binding Response, Converter={StaticResource Conv}}" TextWrapping="Wrap" />
-            
-            <ListBox ItemsSource="{Binding Actors}" Grid.Column="1" ItemTemplate="{StaticResource Actor}" />
-            <ListBox ItemsSource="{Binding Movies}" Grid.Column="1" ItemTemplate="{StaticResource Movie}"/>
+            <TextBox Text="{Binding Response}" TextWrapping="Wrap" />
+            <ListBox ItemsSource="{Binding Result}" Grid.Column="1" ItemTemplateSelector="{StaticResource tempSelector }"/>
+
         </Grid>
     </DockPanel>
 </Window>
