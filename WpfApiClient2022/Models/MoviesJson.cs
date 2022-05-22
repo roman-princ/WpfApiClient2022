@@ -13,7 +13,7 @@ namespace WpfApiClient2022.Models
             public Guid movieId { get; set; }
             public string title { get; set; }
             public string description { get; set; }
-            public ICollection<Movie> Data { get; set; }
+            
         } 
     }
 }

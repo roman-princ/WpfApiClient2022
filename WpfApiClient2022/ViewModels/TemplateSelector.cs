@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using WpfApiClient2022.Models;
+using static WpfApiClient2022.Models.ActorsJson;
+using static WpfApiClient2022.Models.MoviesJson;
 
 namespace WpfApiClient2022.ViewModels
 {
@@ -13,11 +15,11 @@ namespace WpfApiClient2022.ViewModels
     {
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            if (item is Actor)
+            if (item is ActorObject)
             {
                 return ActorTemplate;
             }
-            if (item is Movie)
+            if (item is MovieObject)
             {
                 return MovieTemplate;
             }

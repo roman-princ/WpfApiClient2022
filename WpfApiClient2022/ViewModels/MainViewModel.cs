@@ -48,6 +48,7 @@ namespace WpfApiClient2022.ViewModels
                         Response = "OOPS";
                         Result.Clear();
                     }
+                    
                 }
                 );
 
@@ -69,6 +70,25 @@ namespace WpfApiClient2022.ViewModels
                     }
                 }
                 );
+
+            ActorMoviesCommand = new ParametrizedRelayCommand<Guid>(
+                async (ActorId) =>
+                {
+                    HttpResponseMessage response = new HttpResponseMessage();
+                    response = await _client.GetAsync("actors/" + ActorId + "/movies");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Response = await response.Content.ReadAsStringAsync();
+                        _resObj = JsonConvert.DeserializeObject<IEnumerable<MovieObject>>(Response);
+                        Result = new ObservableCollection<object>(_resObj);
+                    }
+                    else
+                    {
+                        Response = "OOPS";
+                        Result.Clear();
+                    }
+                }
+                );
         }
 
         public string Response { get { return _response; } set { _response = value; NotifyPropertyChanged(); } }
@@ -76,7 +96,7 @@ namespace WpfApiClient2022.ViewModels
 
         public RelayCommand ReloadActorsCommand { get; set; }
         public RelayCommand ReloadMoviesCommand { get; set; }
-
+        public ParametrizedRelayCommand<Guid> ActorMoviesCommand { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
         {

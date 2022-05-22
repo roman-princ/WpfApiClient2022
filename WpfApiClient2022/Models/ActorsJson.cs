@@ -14,7 +14,7 @@ namespace WpfApiClient2022.Models
             public string firstName { get; set; }
             public string lastName { get; set; }
             public int age { get; set; }
-            public ICollection<Actor> Data { get; set; }
+            
         }
         
     }
