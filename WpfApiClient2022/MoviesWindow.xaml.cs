@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace WpfApiClient2022
 {
     /// <summary>
-    /// Interakční logika pro ActorMovies.xaml
+    /// Interakční logika pro Movies.xaml
     /// </summary>
-    public partial class ActorMovies : Window
+    public partial class MoviesWindow : Window
     {
-        public ActorMovies()
+        public MoviesWindow()
         {
             InitializeComponent();
         }

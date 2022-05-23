@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApiClient2022"
         xmlns:vm="clr-namespace:WpfApiClient2022.ViewModels"
-        
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
@@ -19,7 +18,7 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{Binding title}"/>
             </StackPanel>
-        </DataTemplate>
+        </DataTemplate> 
         <vm:TemplateSelector x:Key="tempSelector" ActorTemplate="{StaticResource ActorItem}" MovieTemplate="{StaticResource MovieItem}" />
     </Window.Resources>
     <Window.DataContext>
@@ -37,7 +36,7 @@
             </Grid.ColumnDefinitions>
             <!--<TextBox Text="{Binding Response}" TextWrapping="Wrap" />
             <ListBox ItemsSource="{Binding Result}" Grid.Column="1" ItemTemplateSelector="{StaticResource tempSelector }"/>-->
-            <DataGrid ItemsSource="{Binding Result}" ItemTemplateSelector="{StaticResource tempSelector}" AutoGenerateColumns="False" IsReadOnly="True" x:Name="_grid">
+            <DataGrid ItemsSource="{Binding Result}"  AutoGenerateColumns="False" IsReadOnly="True" x:Name="_grid">
                 <DataGrid.Columns>
                     <!--<DataGridTextColumn Header="#" Binding="{Binding actorId}" />-->
                     <DataGridTextColumn Header="First Name" Binding="{Binding firstName}" />
@@ -47,6 +46,13 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Command="{Binding DataContext.ActorMoviesCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding actorId}" >View</Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding DataContext.DeleteActorCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding actorId}">Delete</Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -62,7 +68,7 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding ActorMovies}" CommandParameter="{Binding actorId}">View</Button>
+                                <!--<Button Command="{Binding ActorMovies}" CommandParameter="{Binding actorId}">View</Button>-->
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

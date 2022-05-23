@@ -77,11 +77,35 @@ namespace WpfApiClient2022.ViewModels
                 {
                     HttpResponseMessage response = new HttpResponseMessage();
                     response = await _client.GetAsync("actors/" + ActorId + "/movies");
-                    if (response.IsSuccessStatusCode)
+                    if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    {
+                        Response = "No movies";
+                    }
+                    else if (response.IsSuccessStatusCode)
                     {
                         Response = await response.Content.ReadAsStringAsync();
                         _resObj = JsonConvert.DeserializeObject<IEnumerable<MovieObject>>(Response);
-                        Result = new ObservableCollection<object>(_resObj);
+                        ActorMovies = new ObservableCollection<object>(_resObj);
+                    }
+                    else
+                    {
+                        Response = "OOPS";
+                        ActorMovies.Clear();
+                    }
+                    MoviesWindow m_window = new MoviesWindow();
+                    m_window.Show();
+
+                }
+                );
+            DeleteActorCommand = new ParametrizedRelayCommand<Guid>
+                (
+                async (ActorId) =>
+                {
+                    HttpResponseMessage response = new HttpResponseMessage();
+                    response = await _client.DeleteAsync("actors/" + ActorId);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        ReloadActorsCommand.Execute(null);
                     }
                     else
                     {
@@ -99,6 +123,7 @@ namespace WpfApiClient2022.ViewModels
         public RelayCommand ReloadActorsCommand { get; set; }
         public RelayCommand ReloadMoviesCommand { get; set; }
         public ParametrizedRelayCommand<Guid> ActorMoviesCommand { get; set; }
+        public ParametrizedRelayCommand<Guid> DeleteActorCommand { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
         {
