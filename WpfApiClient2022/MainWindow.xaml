@@ -37,7 +37,7 @@
             </Grid.ColumnDefinitions>
             <!--<TextBox Text="{Binding Response}" TextWrapping="Wrap" />
             <ListBox ItemsSource="{Binding Result}" Grid.Column="1" ItemTemplateSelector="{StaticResource tempSelector }"/>-->
-            <DataGrid ItemsSource="{Binding Result}" ItemTemplateSelector="{StaticResource tempSelector}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid ItemsSource="{Binding Result}" ItemTemplateSelector="{StaticResource tempSelector}" AutoGenerateColumns="False" IsReadOnly="True" x:Name="_grid">
                 <DataGrid.Columns>
                     <!--<DataGridTextColumn Header="#" Binding="{Binding actorId}" />-->
                     <DataGridTextColumn Header="First Name" Binding="{Binding firstName}" />
@@ -46,7 +46,7 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding }">View</Button>
+                                <Button Command="{Binding DataContext.ActorMoviesCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding actorId}" >View</Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

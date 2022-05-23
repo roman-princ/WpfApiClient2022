@@ -16,10 +16,11 @@ namespace WpfApiClient2022.ViewModels
 {
     internal class MainViewModel : INotifyPropertyChanged
     {
-        private Uri ApiUri = new Uri("https://localhost:7123/api/");
+        private Uri ApiUri = new Uri("http://localhost:5000/api/");
         private HttpClient _client;
 
         private string _response;
+        private ObservableCollection<object> _actormovies;
         private IEnumerable<object> _resObj;
         private ObservableCollection<object> _result = new ObservableCollection<object>();
         
@@ -93,6 +94,7 @@ namespace WpfApiClient2022.ViewModels
 
         public string Response { get { return _response; } set { _response = value; NotifyPropertyChanged(); } }
         public ObservableCollection<object> Result { get { return _result; } set { _result = value; NotifyPropertyChanged(); } }
+        public ObservableCollection<object> ActorMovies { get { return _actormovies; } set { _actormovies = value; NotifyPropertyChanged(); } } 
 
         public RelayCommand ReloadActorsCommand { get; set; }
         public RelayCommand ReloadMoviesCommand { get; set; }
