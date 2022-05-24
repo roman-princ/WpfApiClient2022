@@ -15,13 +15,15 @@ using System.Windows.Shapes;
 namespace WpfApiClient2022
 {
     /// <summary>
-    /// Interakční logika pro Movies.xaml
+    /// Interakční logika pro EditCreate.xaml
     /// </summary>
-    public partial class MoviesWindow : Window
+    public partial class CreateActor : Window
     {
-        public MoviesWindow()
+        public CreateActor()
         {
             InitializeComponent();
         }
+
+        
     }
 }

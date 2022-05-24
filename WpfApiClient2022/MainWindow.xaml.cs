@@ -25,5 +25,17 @@ namespace WpfApiClient2022
             InitializeComponent();
         }
 
+        
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            CreateActor createActor = new CreateActor();
+            createActor.Show();
+        }
+        private void MenuItem2_Click(object sender, RoutedEventArgs e)
+        {
+            CreateMovie createMovie = new CreateMovie();
+            createMovie.Show();
+        }
     }
 }

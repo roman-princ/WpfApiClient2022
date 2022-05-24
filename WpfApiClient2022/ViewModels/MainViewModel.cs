@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using WpfApiClient2022.Models;
 using static WpfApiClient2022.Models.ActorsJson;
 using static WpfApiClient2022.Models.MoviesJson;
@@ -18,11 +19,20 @@ namespace WpfApiClient2022.ViewModels
     {
         private Uri ApiUri = new Uri("http://localhost:5000/api/");
         private HttpClient _client;
-
+        private int _actorage;
         private string _response;
-        private ObservableCollection<object> _actormovies;
-        private IEnumerable<object> _resObj;
-        private ObservableCollection<object> _result = new ObservableCollection<object>();
+        public string ActorFirstName { get; set; }
+        public string ActorLastName { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public Guid CurrentActor { get; set; }
+
+
+        private ObservableCollection<MovieObject> _actormovies;
+        private IEnumerable<ActorObject> _actorObj;
+        private IEnumerable<MovieObject> _movieObj;
+        private ObservableCollection<ActorObject> _actors = new ObservableCollection<ActorObject>();
+        private ObservableCollection<MovieObject> _movies = new ObservableCollection<MovieObject>();
         
 
         public MainViewModel()
@@ -32,28 +42,13 @@ namespace WpfApiClient2022.ViewModels
             _client.BaseAddress = ApiUri;
             _client.DefaultRequestHeaders.Accept.Clear();
             _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            
             _client.Timeout = TimeSpan.FromSeconds(30);
-            ReloadActorsCommand = new RelayCommand(
-                async () =>
-                {
-                    HttpResponseMessage response = new HttpResponseMessage();
-                    response = await _client.GetAsync("actors");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        Response = await response.Content.ReadAsStringAsync();
-                        _resObj = JsonConvert.DeserializeObject<IEnumerable<ActorObject>>(Response);
-                        Result = new ObservableCollection<object>(_resObj);
-                    }
-                    else
-                    {
-                        Response = "OOPS";
-                        Result.Clear();
-                    }
-                    
-                }
-                );
+            _actormovies = new ObservableCollection<MovieObject>();
+            
+            
 
-            ReloadMoviesCommand = new RelayCommand(
+            ReloadCommand = new RelayCommand(
                 async () =>
                 {                   
                     HttpResponseMessage response = new HttpResponseMessage();
@@ -61,13 +56,26 @@ namespace WpfApiClient2022.ViewModels
                     if (response.IsSuccessStatusCode)
                     {
                         Response = await response.Content.ReadAsStringAsync();
-                        _resObj = JsonConvert.DeserializeObject<IEnumerable<MovieObject>>(Response);
-                        Result = new ObservableCollection<object>(_resObj);
+                        _movieObj = JsonConvert.DeserializeObject<IEnumerable<MovieObject>>(Response);
+                        Movies = new ObservableCollection<MovieObject>(_movieObj);
                     }
                     else
                     {
                         Response = "OOPS";
-                        Result.Clear();
+                        Movies.Clear();
+                    }
+                    
+                    response = await _client.GetAsync("actors");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Response = await response.Content.ReadAsStringAsync();
+                        _actorObj = JsonConvert.DeserializeObject<IEnumerable<ActorObject>>(Response);
+                        Actors = new ObservableCollection<ActorObject>(_actorObj);
+                    }
+                    else
+                    {
+                        Response = "OOPS";
+                        Actors.Clear();
                     }
                 }
                 );
@@ -75,6 +83,7 @@ namespace WpfApiClient2022.ViewModels
             ActorMoviesCommand = new ParametrizedRelayCommand<Guid>(
                 async (ActorId) =>
                 {
+                    ActorMovies.Clear();
                     HttpResponseMessage response = new HttpResponseMessage();
                     response = await _client.GetAsync("actors/" + ActorId + "/movies");
                     if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
@@ -84,16 +93,17 @@ namespace WpfApiClient2022.ViewModels
                     else if (response.IsSuccessStatusCode)
                     {
                         Response = await response.Content.ReadAsStringAsync();
-                        _resObj = JsonConvert.DeserializeObject<IEnumerable<MovieObject>>(Response);
-                        ActorMovies = new ObservableCollection<object>(_resObj);
+                        _movieObj = JsonConvert.DeserializeObject<IEnumerable<MovieObject>>(Response);
+                        ActorMovies = new ObservableCollection<MovieObject>(_movieObj);
+                        CurrentActor = ActorId;
                     }
                     else
                     {
                         Response = "OOPS";
                         ActorMovies.Clear();
                     }
-                    MoviesWindow m_window = new MoviesWindow();
-                    m_window.Show();
+                    
+
 
                 }
                 );
@@ -105,25 +115,100 @@ namespace WpfApiClient2022.ViewModels
                     response = await _client.DeleteAsync("actors/" + ActorId);
                     if (response.IsSuccessStatusCode)
                     {
-                        ReloadActorsCommand.Execute(null);
+                        
+                        ReloadCommand.Execute(null);
                     }
                     else
                     {
                         Response = "OOPS";
-                        Result.Clear();
+                        
                     }
                 }
                 );
+            DeleteMovieFromActor = new ParametrizedRelayCommand<Guid>
+                (
+                async (MovieId) =>
+                {
+                    HttpResponseMessage response = new HttpResponseMessage();
+                    response = await _client.DeleteAsync("actors/" + CurrentActor + "/movie/" + MovieId);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        ReloadCommand.Execute(null);
+                        
+                    }
+                    else
+                    {
+                        Response = "OOPS";
+                    }
+                }
+                );
+            //create new actor command from user input
+            CreateActorCommand = new RelayCommand(
+                async () =>
+                {
+                    HttpResponseMessage response = new HttpResponseMessage();
+                    response = await _client.PostAsync("actors", new StringContent(JsonConvert.SerializeObject(new ActorObject { actorId = Guid.NewGuid(), firstName = ActorFirstName, lastName=ActorLastName ,age = ActorAge }), Encoding.UTF8, "application/json"));
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Actor created, click the reload button");
+                        ReloadCommand.Execute(null);
+                    }
+                    else
+                    {
+                        MessageBox.Show("something went wrong: " + response.StatusCode);
+                        
+                    }
+                }
+                );
+            CreateMovieCommand = new RelayCommand(
+                async () =>
+                {
+                    HttpResponseMessage response = new HttpResponseMessage();
+                    response = await _client.PostAsync("movies", new StringContent(JsonConvert.SerializeObject(new MovieObject { movieId = Guid.NewGuid(), title = Title, description = Description }), Encoding.UTF8, "application/json"));
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Movie created, click the reload button");
+                        ReloadCommand.Execute(null);
+                    }
+                    else
+                    {
+                        MessageBox.Show("something went wrong: " + response.StatusCode);
+                    }
+                }
+                );
+            //create edit actor command from user input
+            EditActorCommand = new ParametrizedRelayCommand<ActorObject>(
+                async (actr) =>
+                {
+                    HttpResponseMessage response = new HttpResponseMessage();
+                    response = await _client.PutAsync("actors/" + actr.actorId, new StringContent(JsonConvert.SerializeObject(actr), Encoding.UTF8, "application/json"));
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Actor edited, click the reload button");
+                        ReloadCommand.Execute(null);
+                    }
+                    else
+                    {
+                        MessageBox.Show("something went wrong: " + response.StatusCode);
+                    }
+                }
+                );
+            
+
         }
 
         public string Response { get { return _response; } set { _response = value; NotifyPropertyChanged(); } }
-        public ObservableCollection<object> Result { get { return _result; } set { _result = value; NotifyPropertyChanged(); } }
-        public ObservableCollection<object> ActorMovies { get { return _actormovies; } set { _actormovies = value; NotifyPropertyChanged(); } } 
-
-        public RelayCommand ReloadActorsCommand { get; set; }
-        public RelayCommand ReloadMoviesCommand { get; set; }
+        public int ActorAge { get { return _actorage; } set { _actorage = value; NotifyPropertyChanged(); } }
+        public ObservableCollection<ActorObject> Actors { get { return _actors; } set { _actors = value; NotifyPropertyChanged(); } }
+        public ObservableCollection<MovieObject> Movies { get { return _movies; } set { _movies = value; NotifyPropertyChanged(); } }
+        public ObservableCollection<MovieObject> ActorMovies { get { return _actormovies; } set { _actormovies = value; NotifyPropertyChanged(); } }
+        public RelayCommand ReloadCommand { get; set; }
+        public RelayCommand CreateActorCommand { get; set; }
+        public RelayCommand CreateMovieCommand { get; set; }
+        public ParametrizedRelayCommand<ActorObject> EditActorCommand { get; set; }
         public ParametrizedRelayCommand<Guid> ActorMoviesCommand { get; set; }
         public ParametrizedRelayCommand<Guid> DeleteActorCommand { get; set; }
+        public ParametrizedRelayCommand<Guid> DeleteMovieFromActor { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
         {

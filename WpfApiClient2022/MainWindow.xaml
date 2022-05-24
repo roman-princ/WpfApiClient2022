@@ -17,8 +17,9 @@
         <DataTemplate x:Key="MovieItem">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{Binding title}"/>
+                <Button Content="Delete" Command="{Binding DataContext.DeleteMovieFromActor, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" CommandParameter="{Binding movieId}"></Button>
             </StackPanel>
-        </DataTemplate> 
+        </DataTemplate>
         <vm:TemplateSelector x:Key="tempSelector" ActorTemplate="{StaticResource ActorItem}" MovieTemplate="{StaticResource MovieItem}" />
     </Window.Resources>
     <Window.DataContext>
@@ -26,8 +27,9 @@
     </Window.DataContext>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_Actors" Command="{Binding ReloadActorsCommand}"/>
-            <MenuItem Header="_Movies" Command="{Binding ReloadMoviesCommand}"/>
+            <MenuItem Header="_Reload" Command="{Binding ReloadCommand}" />
+            <MenuItem Header="_New Actor" Click="MenuItem_Click" />
+            <MenuItem Header="_New Movie" Click="MenuItem2_Click" />
         </Menu>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -36,7 +38,7 @@
             </Grid.ColumnDefinitions>
             <!--<TextBox Text="{Binding Response}" TextWrapping="Wrap" />
             <ListBox ItemsSource="{Binding Result}" Grid.Column="1" ItemTemplateSelector="{StaticResource tempSelector }"/>-->
-            <DataGrid ItemsSource="{Binding Result}"  AutoGenerateColumns="False" IsReadOnly="True" x:Name="_grid">
+            <DataGrid ItemsSource="{Binding Actors}" ItemTemplate="{Binding ActorItem}"  AutoGenerateColumns="False" IsReadOnly="True" x:Name="_grid" Height="200" VerticalAlignment="Top">
                 <DataGrid.Columns>
                     <!--<DataGridTextColumn Header="#" Binding="{Binding actorId}" />-->
                     <DataGridTextColumn Header="First Name" Binding="{Binding firstName}" />
@@ -45,7 +47,7 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding DataContext.ActorMoviesCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding actorId}" >View</Button>
+                                <Button Command="{Binding DataContext.ActorMoviesCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"  CommandParameter="{Binding actorId}" >View</Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -56,15 +58,22 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding DataContext.EditActorCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}">Edit</Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
 
-            <DataGrid ItemsSource="{Binding Result}" ItemTemplateSelector="{StaticResource tempSelector}" AutoGenerateColumns="False" Grid.Column="1" IsReadOnly="True">
+            <DataGrid ItemsSource="{Binding Movies}" ItemTemplate="{Binding MovieItem}" AutoGenerateColumns="False" Grid.Column="1" IsReadOnly="True" Height="200" VerticalAlignment="Top">
                 <DataGrid.Columns>
                     <!--<DataGridTextColumn Header="#" Binding="{Binding movieId}" />-->
                     <DataGridTextColumn Header="Title" Binding="{Binding title}" />
                     <DataGridTextColumn Header="Description" Binding="{Binding description}" />
-                    
+
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -74,6 +83,13 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
+            <Label Content="Movies of actor: " HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,205,0,0"></Label>
+            <ListBox ItemsSource="{Binding ActorMovies}" ItemTemplateSelector="{StaticResource tempSelector}" Height="180" BorderThickness="5" VerticalAlignment="Bottom"  HorizontalAlignment="Stretch">
+
+            </ListBox>
+
+
+            <!--<DataGrid ItemsSource="{Binding ActorMovies}" AutoGenerateColumns="True" Margin="127,70,127,69" IsReadOnly="True"></DataGrid>-->
 
         </Grid>
     </DockPanel>

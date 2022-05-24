@@ -1,0 +1,25 @@
+﻿<Window x:Class="WpfApiClient2022.CreateMovie"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:WpfApiClient2022.ViewModels"
+        mc:Ignorable="d"
+        Title="{Binding ActorFirstName}" MaxHeight="350" MaxWidth="300" d:DesignHeight="262.846" d:DesignWidth="219.838">
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
+    <Window.Resources>
+        <vm:ButtonConverter x:Key="buttonconv" />
+    </Window.Resources>
+    <Grid>
+        <StackPanel>
+            <Label Content="Title"/>
+            <TextBox TextWrapping="Wrap" Text="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" />
+            <Label Content="Description"/>
+            <TextBox TextWrapping="Wrap" Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200"/>
+            <Button Content="Create" Command="{Binding CreateMovieCommand}" Width="60" Margin="0,10,0,0" />
+
+        </StackPanel>
+    </Grid>
+</Window>
