@@ -20,7 +20,6 @@
                     <Setter.Value>
                         <Style TargetType="DataGridRow">
                             <Style.Triggers>
-                                <!-- Highlight a grid row as the mouse passes over -->
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Background" Value="LightCyan" />
                                 </Trigger>
@@ -105,13 +104,13 @@
             <DataGrid ItemsSource="{Binding Actors}" ItemTemplate="{Binding ActorItem}" IsReadOnly="False" CanUserAddRows="False"  AutoGenerateColumns="False" x:Name="_grid" Height="200" VerticalAlignment="Top">
                 <DataGrid.Columns>
                     <!--<DataGridTextColumn Header="#" Binding="{Binding actorId}" />-->
-                    <DataGridTextColumn Header="First Name" Binding="{Binding firstName}" />
+                    <DataGridTextColumn Header="First Name" Binding="{Binding firstName}"  />
                     <DataGridTextColumn Header="Last Name" Binding="{Binding lastName}" />
                     <DataGridTextColumn Header="Age" Binding="{Binding age}" />
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding DataContext.ActorMoviesCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"  CommandParameter="{Binding actorId}" >View</Button>
+                                <Button Command="{Binding DataContext.ActorMoviesCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"  CommandParameter="{Binding}" >View</Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -125,7 +124,7 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding DataContext.EditActorCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}"  IsDefault="True">Edit</Button>
+                                <Button Command="{Binding DataContext.EditActorCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding Path=., UpdateSourceTrigger=LostFocus}">Edit</Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -133,7 +132,7 @@
             </DataGrid>
 
             <DataGrid ItemsSource="{Binding Movies}" ItemTemplate="{Binding MovieItem}" IsReadOnly="False" CanUserAddRows="False" AutoGenerateColumns="False" Grid.Column="1" Height="200" VerticalAlignment="Top">
-               
+
                 <DataGrid.Columns>
                     <!--<DataGridTextColumn Header="#" Binding="{Binding movieId}" />-->
                     <DataGridTextColumn Header="Title" Binding="{Binding title}" />
@@ -142,7 +141,7 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding DataContext.MovieActorsCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"  CommandParameter="{Binding movieId}" >View</Button>
+                                <Button Command="{Binding DataContext.MovieActorsCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"  CommandParameter="{Binding}" >View</Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -162,11 +161,19 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-            <Label Content="Movies of actor: " HorizontalAlignment="Left" VerticalAlignment="Center"  Width="390" Margin="0,15,0,0" FontWeight="Bold"></Label>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,0" Orientation="Horizontal">
+                <Label Content="Movies of actor: "  Width="106" FontWeight="Bold"/>
+                <Label Content="{Binding CurrentActor, UpdateSourceTrigger=PropertyChanged}"  Width="266" FontWeight="Bold"/>
+            </StackPanel>
+
             <ListBox ItemsSource="{Binding ActorMovies}" ItemTemplateSelector="{StaticResource tempSelector}" Height="180" BorderThickness="5" VerticalAlignment="Bottom"  HorizontalAlignment="Stretch"></ListBox>
-            <Label Content="Actors of movie: " HorizontalAlignment="Center" VerticalAlignment="Center"  Width="390" Grid.Column="1" Margin="0,15,0,0" FontWeight="Bold"/>
-            <ListBox Grid.Column="1" VerticalAlignment="Bottom" BorderThickness="5" Height="180" ItemsSource="{Binding MovieActors}" ItemTemplateSelector="{StaticResource tempSelector}"  />
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,0" Orientation="Horizontal" Grid.Column="1">
+                <Label Content="Actors of movie: " HorizontalAlignment="Center" VerticalAlignment="Center"  Width="106" FontWeight="Bold"/>
+                <Label Content="{Binding CurrentMovie, UpdateSourceTrigger=PropertyChanged}"  Width="266" FontWeight="Bold"/>
+            </StackPanel>
             
+            <ListBox Grid.Column="1" VerticalAlignment="Bottom" BorderThickness="5" Height="180" ItemsSource="{Binding MovieActors}" ItemTemplateSelector="{StaticResource tempSelector}"  />
+
 
 
 
