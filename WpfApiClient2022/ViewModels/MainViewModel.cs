@@ -23,6 +23,8 @@ namespace WpfApiClient2022.ViewModels
         private string _response;
         private string _currentactor;
         private string _currentmovie;
+        private string _parameteractor;
+        private string _parametermovie;
         public string ActorFirstName { get; set; }
 
         public string ActorLastName { get; set; }
@@ -30,6 +32,10 @@ namespace WpfApiClient2022.ViewModels
         public string Title { get; set; }
 
         public string Description { get; set; }
+        
+        public string ParameterActor { get { return _parameteractor; } set { _parameteractor = value; NotifyPropertyChanged(); } }
+        public string ParameterMovie { get { return _parametermovie; } set { _parametermovie = value; NotifyPropertyChanged(); } }
+        
 
         public string CurrentActor { get { return _currentactor; } set { _currentactor = value; NotifyPropertyChanged(); } }
         public string CurrentMovie { get { return _currentmovie; } set { _currentmovie = value; NotifyPropertyChanged(); } }
@@ -43,6 +49,8 @@ namespace WpfApiClient2022.ViewModels
 
         private ObservableCollection<ActorObject> _actors = new ObservableCollection<ActorObject>();
         private ObservableCollection<MovieObject> _movies = new ObservableCollection<MovieObject>();
+
+        
 
 
         public MainViewModel()
@@ -321,6 +329,81 @@ namespace WpfApiClient2022.ViewModels
                     }
                 }
                 );
+            FilterActorsCommand = new ParametrizedRelayCommand<string>
+                (
+                async (value) =>
+                {
+                    try
+                    {
+                        if (value == null || value == "")
+                        {
+                            ReloadCommand.Execute(null);
+                        }
+                        HttpResponseMessage response = new HttpResponseMessage();
+                        response = await _client.GetAsync("actors/filter/firstname/" + value);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            Response = await response.Content.ReadAsStringAsync();
+
+                            _actorObj = JsonConvert.DeserializeObject<IEnumerable<ActorObject>>(Response);
+                            if (_actorObj != null)
+                            {
+                                Actors = new ObservableCollection<ActorObject>(_actorObj);
+
+                            }
+                            else Actors.Clear();
+                        }
+                        else
+                        {
+                            ReloadCommand.Execute(null);
+
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show("API is not avalible at the moment, try again later.");
+                    }
+
+                }
+                );
+            FilterMoviesCommand = new ParametrizedRelayCommand<string>
+                (
+                async (value) =>
+                {
+                    try
+                    {
+                        if (value == null || value == "")
+                        {
+                            ReloadCommand.Execute(null);
+                        }
+                        HttpResponseMessage response = new HttpResponseMessage();
+                        response = await _client.GetAsync("movies/filter/" + value);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            Response = await response.Content.ReadAsStringAsync();
+
+                            _movieObj = JsonConvert.DeserializeObject<IEnumerable<MovieObject>>(Response);
+                            if (_movieObj != null)
+                            {
+                                Movies = new ObservableCollection<MovieObject>(_movieObj);
+
+                            }
+                            else Movies.Clear();
+                        }
+                        else
+                        {
+                            ReloadCommand.Execute(null);
+
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show("API is not avalible at the moment, try again later.");
+                    }
+                    
+                }
+                );
+            
 
 
 
@@ -338,6 +421,8 @@ namespace WpfApiClient2022.ViewModels
         public RelayCommand CreateMovieCommand { get; set; }
         public ParametrizedRelayCommand<ActorObject> EditActorCommand { get; set; }
         public ParametrizedRelayCommand<MovieObject> EditMovieCommand { get; set; }
+        public ParametrizedRelayCommand<string> FilterActorsCommand { get; set; }
+        public ParametrizedRelayCommand<string> FilterMoviesCommand { get; set; }
 
         public ParametrizedRelayCommand<ActorObject> GetActorCommand { get; set; }
         public ParametrizedRelayCommand<ActorObject> ActorMoviesCommand { get; set; }
