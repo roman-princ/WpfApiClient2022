@@ -6,21 +6,85 @@
         xmlns:local="clr-namespace:WpfApiClient2022"
         xmlns:vm="clr-namespace:WpfApiClient2022.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" MinWidth="800">
+
     <Window.Resources>
-        <DataTemplate x:Key="ActorItem">
-            <StackPanel Orientation="Horizontal">
-                <Label Content="{Binding firstName}"/>
-                <Label Content="{Binding lastName}"/>
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="MovieItem">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding title}"/>
-                <Button Content="Delete" Command="{Binding DataContext.DeleteMovieFromActor, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" CommandParameter="{Binding movieId}"></Button>
-            </StackPanel>
-        </DataTemplate>
-        <vm:TemplateSelector x:Key="tempSelector" ActorTemplate="{StaticResource ActorItem}" MovieTemplate="{StaticResource MovieItem}" />
+        <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+            <Style TargetType="DataGrid">
+                <Setter Property="BorderBrush" Value="#DDDDDD" />
+                <Setter Property="HorizontalGridLinesBrush" Value="#DDDDDD" />
+                <Setter Property="VerticalGridLinesBrush" Value="#DDDDDD" />
+
+                <Setter Property="RowStyle">
+                    <Setter.Value>
+                        <Style TargetType="DataGridRow">
+                            <Style.Triggers>
+                                <!-- Highlight a grid row as the mouse passes over -->
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="LightCyan" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="CellStyle">
+                    <Setter.Value>
+                        <Style TargetType="DataGridCell">
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="#ff66ccff" />
+                                    <Setter Property="BorderBrush" Value="Transparent" />
+                                    <Setter Property="Foreground" Value="Black" />
+                                </Trigger>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter Property="Background" Value="#ff66ccff" />
+                                    <Setter Property="BorderBrush" Value="Black" />
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="Foreground" Value="Black" />
+                                </Trigger>
+                            </Style.Triggers>
+                            <Setter Property="Padding" Value="4,3,4,3" />
+                            <Setter Property="BorderBrush" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="DataGridCell">
+                                        <Border Padding="{TemplateBinding Padding}" 
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            Background="{TemplateBinding Background}">
+                                            <ContentPresenter />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="FocusVisualStyle">
+                                <Setter.Value>
+                                    <Style TargetType="Control">
+                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                    </Style>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <DataTemplate x:Key="ActorItem">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="{Binding firstName}"/>
+                    <Label Content="{Binding lastName}"/>
+                </StackPanel>
+            </DataTemplate>
+            <DataTemplate x:Key="MovieItem">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="{Binding title}"/>
+                    <!--<Button Content="Delete" Command="{Binding DataContext.DeleteMovieFromActor, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" CommandParameter="{Binding movieId}"></Button>-->
+                </StackPanel>
+            </DataTemplate>
+            <vm:TemplateSelector x:Key="tempSelector" ActorTemplate="{StaticResource ActorItem}" MovieTemplate="{StaticResource MovieItem}" />
+        </ResourceDictionary>
+
     </Window.Resources>
     <Window.DataContext>
         <vm:MainViewModel/>
@@ -38,7 +102,7 @@
             </Grid.ColumnDefinitions>
             <!--<TextBox Text="{Binding Response}" TextWrapping="Wrap" />
             <ListBox ItemsSource="{Binding Result}" Grid.Column="1" ItemTemplateSelector="{StaticResource tempSelector }"/>-->
-            <DataGrid ItemsSource="{Binding Actors}" ItemTemplate="{Binding ActorItem}"  AutoGenerateColumns="False" IsReadOnly="True" x:Name="_grid" Height="200" VerticalAlignment="Top">
+            <DataGrid ItemsSource="{Binding Actors}" ItemTemplate="{Binding ActorItem}" IsReadOnly="False" CanUserAddRows="False"  AutoGenerateColumns="False" x:Name="_grid" Height="200" VerticalAlignment="Top">
                 <DataGrid.Columns>
                     <!--<DataGridTextColumn Header="#" Binding="{Binding actorId}" />-->
                     <DataGridTextColumn Header="First Name" Binding="{Binding firstName}" />
@@ -61,14 +125,15 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding DataContext.EditActorCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}">Edit</Button>
+                                <Button Command="{Binding DataContext.EditActorCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}"  IsDefault="True">Edit</Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
 
-            <DataGrid ItemsSource="{Binding Movies}" ItemTemplate="{Binding MovieItem}" AutoGenerateColumns="False" Grid.Column="1" IsReadOnly="True" Height="200" VerticalAlignment="Top">
+            <DataGrid ItemsSource="{Binding Movies}" ItemTemplate="{Binding MovieItem}" IsReadOnly="False" CanUserAddRows="False" AutoGenerateColumns="False" Grid.Column="1" Height="200" VerticalAlignment="Top">
+               
                 <DataGrid.Columns>
                     <!--<DataGridTextColumn Header="#" Binding="{Binding movieId}" />-->
                     <DataGridTextColumn Header="Title" Binding="{Binding title}" />
@@ -77,16 +142,33 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <!--<Button Command="{Binding ActorMovies}" CommandParameter="{Binding actorId}">View</Button>-->
+                                <Button Command="{Binding DataContext.MovieActorsCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"  CommandParameter="{Binding movieId}" >View</Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding DataContext.DeleteMovieCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding movieId}">Delete</Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Edit" Command="{Binding DataContext.EditMovieCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}"></Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-            <Label Content="Movies of actor: " HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,205,0,0"></Label>
-            <ListBox ItemsSource="{Binding ActorMovies}" ItemTemplateSelector="{StaticResource tempSelector}" Height="180" BorderThickness="5" VerticalAlignment="Bottom"  HorizontalAlignment="Stretch">
+            <Label Content="Movies of actor: " HorizontalAlignment="Left" VerticalAlignment="Center"  Width="390" Margin="0,15,0,0" FontWeight="Bold"></Label>
+            <ListBox ItemsSource="{Binding ActorMovies}" ItemTemplateSelector="{StaticResource tempSelector}" Height="180" BorderThickness="5" VerticalAlignment="Bottom"  HorizontalAlignment="Stretch"></ListBox>
+            <Label Content="Actors of movie: " HorizontalAlignment="Center" VerticalAlignment="Center"  Width="390" Grid.Column="1" Margin="0,15,0,0" FontWeight="Bold"/>
+            <ListBox Grid.Column="1" VerticalAlignment="Bottom" BorderThickness="5" Height="180" ItemsSource="{Binding MovieActors}" ItemTemplateSelector="{StaticResource tempSelector}"  />
+            
 
-            </ListBox>
+
 
 
             <!--<DataGrid ItemsSource="{Binding ActorMovies}" AutoGenerateColumns="True" Margin="127,70,127,69" IsReadOnly="True"></DataGrid>-->

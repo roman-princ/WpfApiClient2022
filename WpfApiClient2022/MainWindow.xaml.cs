@@ -37,5 +37,9 @@ namespace WpfApiClient2022
             CreateMovie createMovie = new CreateMovie();
             createMovie.Show();
         }
+
+
+
+        
     }
 }

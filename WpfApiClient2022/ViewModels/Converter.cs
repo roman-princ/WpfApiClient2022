@@ -15,7 +15,6 @@ namespace WpfApiClient2022.ViewModels
         {
 
             throw new NotImplementedException();
-
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

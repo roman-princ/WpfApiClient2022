@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,16 +22,24 @@ namespace WpfApiClient2022.ViewModels
         private HttpClient _client;
         private int _actorage;
         private string _response;
+        [BindProperty]
         public string ActorFirstName { get; set; }
+        [BindProperty]
         public string ActorLastName { get; set; }
+        [BindProperty]
         public string Title { get; set; }
+        [BindProperty]
         public string Description { get; set; }
+        [BindProperty]
         public Guid CurrentActor { get; set; }
 
 
         private ObservableCollection<MovieObject> _actormovies;
+        private ObservableCollection<ActorObject> _movieactors;
+        
         private IEnumerable<ActorObject> _actorObj;
         private IEnumerable<MovieObject> _movieObj;
+        
         private ObservableCollection<ActorObject> _actors = new ObservableCollection<ActorObject>();
         private ObservableCollection<MovieObject> _movies = new ObservableCollection<MovieObject>();
         
@@ -107,6 +116,37 @@ namespace WpfApiClient2022.ViewModels
 
                 }
                 );
+            MovieActorsCommand = new ParametrizedRelayCommand<Guid>(
+                async (Movieid) =>
+                {
+                    if(MovieActors != null)
+                    {
+                        MovieActors.Clear();
+                    }
+                    
+                    HttpResponseMessage response = new HttpResponseMessage();
+                    response = await _client.GetAsync("movies/" + Movieid + "/actors");
+                    if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    {
+                        Response = "No actors";
+                    }
+                    else if (response.IsSuccessStatusCode)
+                    {
+                        Response = await response.Content.ReadAsStringAsync();
+                        _actorObj = JsonConvert.DeserializeObject<IEnumerable<ActorObject>>(Response);
+                        MovieActors = new ObservableCollection<ActorObject>(_actorObj);
+                        
+                    }
+                    else
+                    {
+                        Response = "OOPS";
+                        MovieActors.Clear();
+                    }
+                    
+
+
+                }
+                );
             DeleteActorCommand = new ParametrizedRelayCommand<Guid>
                 (
                 async (ActorId) =>
@@ -122,6 +162,22 @@ namespace WpfApiClient2022.ViewModels
                     {
                         Response = "OOPS";
                         
+                    }
+                }
+                );
+            DeleteMovieCommand = new ParametrizedRelayCommand<Guid>
+                (
+                async (MovieId) =>
+                {
+                    HttpResponseMessage response = new HttpResponseMessage();
+                    response = await _client.DeleteAsync("movies/" + MovieId);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        ReloadCommand.Execute(null);
+                    }
+                    else
+                    {
+                        Response = "OOPS";
                     }
                 }
                 );
@@ -178,13 +234,32 @@ namespace WpfApiClient2022.ViewModels
                 );
             //create edit actor command from user input
             EditActorCommand = new ParametrizedRelayCommand<ActorObject>(
-                async (actr) =>
+                async (actor) =>
                 {
+                    
+                    
                     HttpResponseMessage response = new HttpResponseMessage();
-                    response = await _client.PutAsync("actors/" + actr.actorId, new StringContent(JsonConvert.SerializeObject(actr), Encoding.UTF8, "application/json"));
+                    response = await _client.PutAsync("actors/" + actor.actorId, new StringContent(JsonConvert.SerializeObject(actor), Encoding.UTF8, "application/json"));
                     if (response.IsSuccessStatusCode)
                     {
-                        MessageBox.Show("Actor edited, click the reload button");
+                        ReloadCommand.Execute(null);
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("something went wrong: " + response.StatusCode);
+                    }
+                }
+                );
+            //create edit movie command from user input
+            EditMovieCommand = new ParametrizedRelayCommand<MovieObject>(
+                async (movie) =>
+                {
+
+                    HttpResponseMessage response = new HttpResponseMessage();
+                    response = await _client.PutAsync("movies/" + movie.movieId, new StringContent(JsonConvert.SerializeObject(movie), Encoding.UTF8, "application/json"));
+                    if (response.IsSuccessStatusCode)
+                    {
                         ReloadCommand.Execute(null);
                     }
                     else
@@ -193,7 +268,8 @@ namespace WpfApiClient2022.ViewModels
                     }
                 }
                 );
-            
+
+
 
         }
 
@@ -202,12 +278,19 @@ namespace WpfApiClient2022.ViewModels
         public ObservableCollection<ActorObject> Actors { get { return _actors; } set { _actors = value; NotifyPropertyChanged(); } }
         public ObservableCollection<MovieObject> Movies { get { return _movies; } set { _movies = value; NotifyPropertyChanged(); } }
         public ObservableCollection<MovieObject> ActorMovies { get { return _actormovies; } set { _actormovies = value; NotifyPropertyChanged(); } }
+        public ObservableCollection<ActorObject> MovieActors { get { return _movieactors; } set { _movieactors = value; NotifyPropertyChanged(); } }
+        
         public RelayCommand ReloadCommand { get; set; }
         public RelayCommand CreateActorCommand { get; set; }
         public RelayCommand CreateMovieCommand { get; set; }
         public ParametrizedRelayCommand<ActorObject> EditActorCommand { get; set; }
+        public ParametrizedRelayCommand<MovieObject> EditMovieCommand { get; set; }
+        
+        public ParametrizedRelayCommand<ActorObject> GetActorCommand { get; set; }
         public ParametrizedRelayCommand<Guid> ActorMoviesCommand { get; set; }
+        public ParametrizedRelayCommand<Guid> MovieActorsCommand { get; set; }
         public ParametrizedRelayCommand<Guid> DeleteActorCommand { get; set; }
+        public ParametrizedRelayCommand<Guid> DeleteMovieCommand { get; set; }
         public ParametrizedRelayCommand<Guid> DeleteMovieFromActor { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
