@@ -293,7 +293,7 @@ namespace WpfApiClient2022.ViewModels
                     response = await _client.PutAsync("actors/" + actor.actorId, new StringContent(JsonConvert.SerializeObject(actor), Encoding.UTF8, "application/json"));
                     if (response.IsSuccessStatusCode)
                     {
-                        MessageBox.Show("actor edited");
+                        //MessageBox.Show("actor edited");
                         ReloadCommand.Execute(null);
 
                     }
@@ -312,7 +312,7 @@ namespace WpfApiClient2022.ViewModels
                     response = await _client.PutAsync("movies/" + movie.movieId, new StringContent(JsonConvert.SerializeObject(movie), Encoding.UTF8, "application/json"));
                     if (response.IsSuccessStatusCode)
                     {
-                        MessageBox.Show("movie edited");
+                        //MessageBox.Show("movie edited");
                         ReloadCommand.Execute(null);
                     }
                     else

@@ -69,6 +69,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+            
             <DataTemplate x:Key="ActorItem">
                 <StackPanel Orientation="Horizontal">
                     <Label Content="{Binding firstName}"/>
@@ -99,6 +100,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+            
             <!--<TextBox Text="{Binding Response}" TextWrapping="Wrap" />
             <ListBox ItemsSource="{Binding Result}" Grid.Column="1" ItemTemplateSelector="{StaticResource tempSelector }"/>-->
             <DataGrid ItemsSource="{Binding Actors}" ItemTemplate="{Binding ActorItem}" IsReadOnly="False" CanUserAddRows="False"  AutoGenerateColumns="False" x:Name="_grid" Height="200" VerticalAlignment="Top">
@@ -110,21 +112,21 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding DataContext.ActorMoviesCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"  CommandParameter="{Binding}" >View</Button>
+                                <Button Command="{Binding DataContext.ActorMoviesCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"  CommandParameter="{Binding}" BorderThickness="1" BorderBrush="white" Background="RoyalBlue" Foreground="White">View</Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding DataContext.DeleteActorCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding actorId}">Delete</Button>
+                                <Button Command="{Binding DataContext.DeleteActorCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding actorId}" BorderThickness="1" BorderBrush="white" Background="DarkRed" Foreground="White" >Delete</Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding DataContext.EditActorCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding Path=., UpdateSourceTrigger=LostFocus}">Edit</Button>
+                                <Button Command="{Binding DataContext.EditActorCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding Path=., UpdateSourceTrigger=LostFocus}" BorderThickness="1" Background="Orange" Foreground="White" >Save</Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -141,21 +143,21 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding DataContext.MovieActorsCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"  CommandParameter="{Binding}" >View</Button>
+                                <Button Command="{Binding DataContext.MovieActorsCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"  CommandParameter="{Binding}" BorderThickness="1" Background="RoyalBlue" Foreground="White"  >View</Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding DataContext.DeleteMovieCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding movieId}">Delete</Button>
+                                <Button Command="{Binding DataContext.DeleteMovieCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding movieId}" BorderThickness="1" BorderBrush="white" Background="DarkRed" Foreground="White">Delete</Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="Edit" Command="{Binding DataContext.EditMovieCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}"></Button>
+                                <Button Content="Save" Command="{Binding DataContext.EditMovieCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}" BorderThickness="1" BorderBrush="white" Background="Orange" Foreground="White"></Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
